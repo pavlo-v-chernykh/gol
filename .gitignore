@@ -10,6 +10,7 @@ pom.xml
 .lein-repl-history
 .lein-plugins/
 .repl
+.nrepl-port
 
 .idea
 *.iml
