@@ -26,9 +26,9 @@
   :profiles {:dev {:source-paths ["dev"]
                    :cljsbuild    {:builds [{:id           "gol"
                                             :source-paths ["src"]
-                                            :compiler     {:output-to     "out/js/gol.js"
-                                                           :output-dir    "out/js"
+                                            :compiler     {:output-to     "resources/public/js/build/gol.js"
+                                                           :output-dir    "resources/public/js/build"
                                                            :optimizations :none}}]}
                    :garden       {:builds [{:id         "gol"
                                             :stylesheet gol.styles/styles
-                                            :compiler   {:output-to "out/css/styles.css"}}]}}})
+                                            :compiler   {:output-to "resources/public/css/build/styles.css"}}]}}})
