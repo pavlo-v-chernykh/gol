@@ -32,7 +32,7 @@
 (def step (stepper neighbours #{3} #{2 3}))
 
 (def app-state
-  (atom {:gen #{[2 0] [2 1] [2 2] [1 2] [0 1]}}))
+  (atom {:gen (set (take 250 (distinct (partition 2 (repeatedly #(rand-int 50))))))}))
 
 (defn cell
   [cell owner]
