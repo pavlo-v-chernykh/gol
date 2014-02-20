@@ -13,12 +13,12 @@
   (html5
     [:head
      (include-css
-       "/css/lib/normalize.css"
+       "//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css"
        "/css/build/styles.css")]
     [:body
      [:div#app]
      (include-js
-       "/js/lib/react.js"
+       "//fb.me/react-0.9.0.min.js"
        "/js/build/goog/base.js"
        "/js/build/gol.js")
      [:script
