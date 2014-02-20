@@ -52,7 +52,7 @@
     (reify
       om/IInitState
       (init-state [_]
-        {:timeout {:current 100}
+        {:timeout {:current 250}
          :board   {:width  50
                    :height 50}
          :stop    false})
