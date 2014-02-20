@@ -70,6 +70,6 @@
             row
             (let [w (om/get-state owner [:board :width])
                   h (om/get-state owner [:board :height])
-                  b (populate (empty-board w h) (filter (fn [[x y]] (and (< x w) (< y h))) (om/value (:gen app))))]
+                  b (populate (empty-board w h) (filter (fn [[x y]] (and (< -1 x w) (< -1 y h))) (om/value (:gen app))))]
               b))))))
   (. js/document (getElementById "app")))
