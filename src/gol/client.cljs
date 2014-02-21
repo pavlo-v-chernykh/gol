@@ -36,15 +36,13 @@
 
 (defn cell
   [cell owner]
-  (dom/td #js {:style #js {:background (if (om/value cell) "black" "white")
-                           :border     "1px solid lightgray"
-                           :width      "10px"
-                           :height     "10px"
-                           :text-align "center"}}))
+  (dom/b
+    (if (om/value cell) #js {:className "cell"} nil)
+    (if (om/value cell) (dom/i nil) nil)))
 
 (defn row
   [row owner]
-  (apply dom/tr nil (om/build-all cell row)))
+  (apply dom/li nil (om/build-all cell row)))
 
 (om/root
   app-state
@@ -64,8 +62,7 @@
       om/IRender
       (render [_]
         (apply
-          dom/table
-          #js {:style #js {:border "1px solid gray"}}
+          dom/ul #js {:className "cell-area"}
           (om/build-all
             row
             (let [w (om/get-state owner [:board :width])
