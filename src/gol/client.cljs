@@ -54,13 +54,14 @@
       (init-state [_]
         {:timeout {:current 250}
          :board   {:width  50
-                   :height 50}
-         :stop    false})
+                   :height 50}})
       om/IWillMount
       (will-mount [_]
         (go (while (not (om/get-state owner :stop))
               (<! (timeout (om/get-state owner [:timeout :current])))
-              (om/transact! app :gen step))))
+              (let [w (om/get-state owner [:board :width])
+                    h (om/get-state owner [:board :height])]
+                (om/transact! app :gen (comp set (partial filter (fn [[x y]] (and (< -1 x w) (< -1 y h)))) step))))))
       om/IRender
       (render [_]
         (apply
@@ -69,7 +70,6 @@
           (om/build-all
             row
             (let [w (om/get-state owner [:board :width])
-                  h (om/get-state owner [:board :height])
-                  b (populate (empty-board w h) (filter (fn [[x y]] (and (< -1 x w) (< -1 y h))) (om/value (:gen app))))]
-              b))))))
+                  h (om/get-state owner [:board :height])]
+              (populate (empty-board w h) (om/value (:gen app)))))))))
   (. js/document (getElementById "app")))
