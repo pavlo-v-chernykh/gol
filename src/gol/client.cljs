@@ -1,8 +1,7 @@
 (ns gol.client
   (:require-macros [cljs.core.async.macros :refer [go alt!]])
   (:require [cljs.core.async :as async :refer [chan timeout <! >! put! dropping-buffer]]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
+            [reagent.core :as reagent :refer [atom]]
             [clojure.browser.repl :as repl]))
 
 (enable-console-print!)
@@ -31,42 +30,22 @@
 
 (def step (stepper neighbours #{3} #{2 3}))
 
-(def app-state
-  (atom {:gen (set (take 250 (distinct (partition 2 (repeatedly #(rand-int 50))))))}))
-
 (defn cell
-  [cell owner]
-  (dom/b
-    (if (om/value cell) #js {:className "cell"} nil)
-    (if (om/value cell) (dom/i nil) nil)))
+  [cell]
+  [:b.cell (when cell [:i])])
 
 (defn row
-  [row owner]
-  (apply dom/li nil (om/build-all cell row)))
+  [row]
+  [:li (map cell row)])
 
-(om/root
-  app-state
-  (fn [app owner]
-    (reify
-      om/IInitState
-      (init-state [_]
-        {:timeout {:current 250}
-         :board   {:width  50
-                   :height 50}})
-      om/IWillMount
-      (will-mount [_]
-        (go (while (not (om/get-state owner :stop))
-              (<! (timeout (om/get-state owner [:timeout :current])))
-              (let [w (om/get-state owner [:board :width])
-                    h (om/get-state owner [:board :height])]
-                (om/transact! app :gen (comp set (partial filter (fn [[x y]] (and (< -1 x w) (< -1 y h)))) step))))))
-      om/IRender
-      (render [_]
-        (apply
-          dom/ul #js {:className "cell-area"}
-          (om/build-all
-            row
-            (let [w (om/get-state owner [:board :width])
-                  h (om/get-state owner [:board :height])]
-              (populate (empty-board w h) (om/value (:gen app)))))))))
+(def main-component
+  (let [app (atom {:gen (set (take 500 (distinct (partition 2 (repeatedly #(rand-int 50))))))})]
+    (with-meta
+      (fn [] [:ul.cell-area (map row (populate (empty-board 50 50) (:gen @app)))])
+      {:component-will-mount (fn [_] (go (while true
+                                           (<! (timeout 0))
+                                           (swap! app update-in [:gen] (comp set (partial filter (fn [[x y]] (and (< -1 x 50) (< -1 y 50)))) step)))))})))
+
+(reagent/render-component
+  [main-component]
   (. js/document (getElementById "app")))

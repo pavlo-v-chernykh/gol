@@ -10,7 +10,7 @@
                  [org.clojure/clojurescript "0.0-2156"]
                  [org.clojure/google-closure-library-third-party "0.0-20130212-95c19e7f0f5f"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
-                 [om "0.3.6"]
+                 [reagent "0.4.1"]
                  [com.facebook/react "0.8.0.1"]
 
                  [garden "1.1.5"]
