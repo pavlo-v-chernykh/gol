@@ -1,7 +1,8 @@
 (ns gol.client
   (:require-macros [cljs.core.async.macros :refer [go alt!]])
   (:require [cljs.core.async :as async :refer [chan timeout <! >! put! dropping-buffer]]
-            [reagent.core :as reagent :refer [atom]]
+            [cljs.core :refer [clj->js]]
+            [reagent.core :as r :refer [atom]]
             [clojure.browser.repl :as repl]))
 
 (enable-console-print!)
@@ -30,22 +31,28 @@
 
 (def step (stepper neighbours #{3} #{2 3}))
 
+(defn filter-on-board
+  [bw bh]
+  (partial
+    filter
+    (fn [[x y]] (and (< -1 x bw) (< -1 y bh)))))
+
 (defn cell
   [cell]
   [:b.cell (when cell [:i])])
 
 (defn row
   [row]
-  [:li (map cell row)])
+  (into [:li] (map cell row)))
 
 (def main-component
-  (let [app (atom {:gen (set (take 500 (distinct (partition 2 (repeatedly #(rand-int 50))))))})]
-    (with-meta
-      (fn [] [:ul.cell-area (map row (populate (empty-board 50 50) (:gen @app)))])
-      {:component-will-mount (fn [_] (go (while true
-                                           (<! (timeout 0))
-                                           (swap! app update-in [:gen] (comp set (partial filter (fn [[x y]] (and (< -1 x 50) (< -1 y 50)))) step)))))})))
+  (let [c 300
+        w 50
+        h 50
+        s (atom {:gen (set (take c (distinct (repeatedly (fn [] [(rand-int w) (rand-int h)])))))})]
+    (fn []
+      (let [c (into [:ul.cell-area] (map row (populate (empty-board w h) (:gen @s))))]
+        (js/setTimeout #(swap! s update-in [:gen] (comp set (filter-on-board w h) step)) 250)
+        c))))
 
-(reagent/render-component
-  [main-component]
-  (. js/document (getElementById "app")))
+(r/render-component [main-component] (. js/document (getElementById "app")))

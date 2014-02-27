@@ -32,5 +32,5 @@
                    :garden       {:builds [{:id         "gol"
                                             :stylesheet gol.styles/styles
                                             :compiler   {:output-to "resources/public/css/build/styles.css"
-                                                         :vendors ["webkit" "moz" "o" "ms"]}}]}}}
+                                                         :vendors   ["webkit" "moz" "o" "ms"]}}]}}}
   :aliases {"build" ["do" ["cljsbuild" "once"] ["garden" "once"]]})
