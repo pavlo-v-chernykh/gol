@@ -44,15 +44,12 @@
   [count width height]
   (set (take count (distinct (repeatedly (fn [] [(rand-int width) (rand-int height)]))))))
 
-(def state (atom (let [count   300
-                       timeout 250
-                       width   30
-                       height  30]
+(def state (atom (let [count 300 width 30 height 30]
                    {:gen     (rand-state count width height)
-                    :count   300
+                    :count   count
                     :timeout 250
-                    :width   30
-                    :height  30
+                    :width   width
+                    :height  height
                     :pause   false})))
 
 (def main-component
