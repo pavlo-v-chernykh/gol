@@ -2,26 +2,11 @@
   (:require [garden.def :refer [defstyles]]
             [garden.def :refer [defrule defkeyframes]]
             [garden.units :refer [px percent s]]
-            [garden.color :refer [hex->rgb rgba rgb]]
-  )
-)
+            [garden.color :refer [hex->rgb rgba rgb]]))
 
-
-(def cell-size 12)
-
+(def cell-size 20)
 
 (defstyles styles
-  [:html {
-    :height (percent 100) }]
-
-  [:body {
-    :display "table"
-    :min-width (px 980)
-    :width (percent 100)
-    :height (percent 100)
-    :margin 0
-    :background-color (hex->rgb "#fdfdfd") }]
-
   [:#app {
     :display "table-cell"
     :vertical-align "middle"
@@ -70,5 +55,4 @@
           :content "\"\""}
           [:& ^:prefix {
             :border-radius (percent 50)
-            :box-shadow [[0 0 (px 3) (rgba 0 0 0 0.5)]] }] ]]]]
-)
+            :box-shadow [[0 0 (px 3) (rgba 0 0 0 0.5)]] }] ]]]])
