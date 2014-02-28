@@ -1,12 +1,5 @@
 (ns gol.client
-  (:require-macros [cljs.core.async.macros :refer [go alt!]])
-  (:require [cljs.core.async :as async :refer [chan timeout <! >! put! dropping-buffer]]
-            [cljs.core :refer [clj->js]]
-            [reagent.core :as r :refer [atom]]
-            [clojure.browser.repl :as repl]))
-
-(enable-console-print!)
-;(repl/connect "http://localhost:9000/repl")
+  (:require [reagent.core :as r :refer [atom]]))
 
 (defn empty-board [w h] (vec (repeat w (vec (repeat h nil)))))
 
@@ -47,12 +40,13 @@
 
 (def main-component
   (let [c 300
-        w 50
-        h 50
+        t 250
+        w 25
+        h 25
         s (atom {:gen (set (take c (distinct (repeatedly (fn [] [(rand-int w) (rand-int h)])))))})]
     (fn []
       (let [c (into [:ul.cell-area] (map row (populate (empty-board w h) (:gen @s))))]
-        (js/setTimeout #(swap! s update-in [:gen] (comp set (filter-on-board w h) step)) 250)
+        (js/setTimeout #(swap! s update-in [:gen] (comp set (filter-on-board w h) step)) t)
         c))))
 
-(r/render-component [main-component] (. js/document (getElementById "app")))
+(r/render-component [main-component] (js/document.getElementById "app"))
