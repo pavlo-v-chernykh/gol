@@ -14,9 +14,11 @@
     [:head
      (include-css
        "//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css"
-       "/css/build/styles.css")]
+       "/css/build/app/styles.css"
+       "/css/build/control/styles.css")]
     [:body
      [:div#app]
+     [:div#control]
      (include-js
        "//fb.me/react-0.9.0.js"
        "/js/build/goog/base.js"

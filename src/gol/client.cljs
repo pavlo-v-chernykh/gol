@@ -1,5 +1,7 @@
 (ns gol.client
-  (:require [reagent.core :as r :refer [atom]]))
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [reagent.core :as r :refer [atom]]
+            [cljs.core.async :as async :refer [chan timeout <! put!]]))
 
 (defn empty-board [w h] (vec (repeat w (vec (repeat h nil)))))
 
@@ -38,15 +40,45 @@
   [row]
   (into [:li] (map cell row)))
 
+(defn rand-state
+  [count width height]
+  (set (take count (distinct (repeatedly (fn [] [(rand-int width) (rand-int height)]))))))
+
+(def state (atom (let [count   300
+                       timeout 250
+                       width   30
+                       height  30]
+                   {:gen     (rand-state count width height)
+                    :count   300
+                    :timeout 250
+                    :width   30
+                    :height  30
+                    :pause   false})))
+
 (def main-component
-  (let [c 300
-        t 200
-        w 30
-        h 30
-        s (atom {:gen (set (take c (distinct (repeatedly (fn [] [(rand-int w) (rand-int h)])))))})]
-    (fn []
-      (let [c (into [:ul.cell-area] (map row (populate (empty-board w h) (:gen @s))))]
-        (js/setTimeout #(swap! s update-in [:gen] (comp set (filter-on-board w h) step)) t)
-        c))))
+  (with-meta
+    (fn [] (into [:ul.cell-area] (map row (populate (empty-board (:width @state) (:height @state)) (:gen @state)))))
+    {:component-will-mount (fn [this]
+                             (go (while true
+                                   (<! (timeout (:timeout @state)))
+                                   (when (not (:pause @state))
+                                     (swap! state update-in [:gen] (comp set (filter-on-board (:width @state) (:height @state)) step))))))}))
 
 (r/render-component [main-component] (js/document.getElementById "app"))
+
+(def c (chan))
+
+(def control-component
+  (fn []
+    [:div
+     [:button {:on-click (fn [] (put! c {:msg :toggle}))} "Toggle"]
+     [:button {:on-click (fn [] (put! c {:msg :reset}))} "Reset"]]))
+
+(go (while true
+      (let [{v :msg} (<! c)]
+        (case v
+          :toggle (swap! state update-in [:pause] not)
+          :reset (swap! state update-in [:gen] (fn [_] (rand-state (:count @state) (:width @state) (:height @state))))))))
+
+
+(r/render-component [control-component] (js/document.getElementById "control"))

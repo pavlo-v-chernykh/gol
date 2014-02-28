@@ -30,7 +30,12 @@
                                                            :pretty-print  true
                                                            :optimizations :none
                                                            :source-map    "resources/public/js/build/gol.js.map"}}]}
-                   :garden       {:builds [{:stylesheet gol.styles/styles
-                                            :compiler   {:output-to "resources/public/css/build/styles.css"
+                   :garden       {:builds [{:id         "app"
+                                            :stylesheet gol.styles.app/styles
+                                            :compiler   {:output-to "resources/public/css/build/app/styles.css"
+                                                         :vendors   ["webkit" "moz" "o" "ms"]}}
+                                           {:id         "control"
+                                            :stylesheet gol.styles.control/styles
+                                            :compiler   {:output-to "resources/public/css/build/control/styles.css"
                                                          :vendors   ["webkit" "moz" "o" "ms"]}}]}}}
   :aliases {"build" ["do" ["cljsbuild" "once"] ["garden" "once"]]})
