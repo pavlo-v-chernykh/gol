@@ -18,7 +18,7 @@
     [:body
      [:div#app]
      (include-js
-       "//fb.me/react-with-addons-0.9.0.min.js"
+       "//fb.me/react-0.9.0.js"
        "/js/build/goog/base.js"
        "/js/build/gol.js")
      [:script
