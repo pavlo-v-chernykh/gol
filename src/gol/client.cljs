@@ -40,9 +40,9 @@
 
 (def main-component
   (let [c 300
-        t 250
-        w 25
-        h 25
+        t 200
+        w 30
+        h 30
         s (atom {:gen (set (take c (distinct (repeatedly (fn [] [(rand-int w) (rand-int h)])))))})]
     (fn []
       (let [c (into [:ul.cell-area] (map row (populate (empty-board w h) (:gen @s))))]

@@ -11,6 +11,7 @@
     :display "table-cell"
     :vertical-align "middle"
     :text-align "center" }]
+    :margin [[0 (px -1) (px -1) 0]]
 
   [:.cell-area {
     :display "inline-block"
