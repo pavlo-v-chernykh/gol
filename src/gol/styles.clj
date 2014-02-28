@@ -10,12 +10,11 @@
   [:#app {
     :display "table-cell"
     :vertical-align "middle"
-    :text-align "center"
-    :margin [[0 (px -1) (px -1) 0]]}]
+    :text-align "center"}]
 
   [:.cell-area {
     :display "inline-block"
-    :margin 0
+    :margin [[0 (px -1) (px -1) 0]]
     :padding [[(px 1) (px 1) 0 0]]
     :list-style "none"
     :font-size 0
