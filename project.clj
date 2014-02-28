@@ -24,13 +24,13 @@
             [lein-ring "0.8.10"]]
   :ring {:handler gol.server/app}
   :profiles {:dev {:source-paths ["dev"]
-                   :cljsbuild    {:builds [{:id           "gol"
-                                            :source-paths ["src"]
+                   :cljsbuild    {:builds [{:source-paths ["src"]
                                             :compiler     {:output-to     "resources/public/js/build/gol.js"
                                                            :output-dir    "resources/public/js/build"
-                                                           :optimizations :none}}]}
-                   :garden       {:builds [{:id         "gol"
-                                            :stylesheet gol.styles/styles
+                                                           :pretty-print  true
+                                                           :optimizations :none
+                                                           :source-map    "resources/public/js/build/gol.js.map"}}]}
+                   :garden       {:builds [{:stylesheet gol.styles/styles
                                             :compiler   {:output-to "resources/public/css/build/styles.css"
                                                          :vendors   ["webkit" "moz" "o" "ms"]}}]}}}
   :aliases {"build" ["do" ["cljsbuild" "once"] ["garden" "once"]]})
