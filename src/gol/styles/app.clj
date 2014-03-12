@@ -9,7 +9,8 @@
 (defstyles styles
   [:#app {:display        "table-cell"
           :vertical-align "middle"
-          :text-align     "center"}]
+          :text-align     "center"
+          :float          :left}]
 
   [:.cell-area {:display     "inline-block"
                 :margin      [[0 (px -1) (px -1) 0]]

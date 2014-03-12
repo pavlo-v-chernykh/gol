@@ -5,4 +5,5 @@
             [garden.color :refer [hex->rgb rgba rgb]]))
 
 (defstyles styles
-  [:#control {:margin-top (px 50)}])
+  [:#control {:margin-top (px 5)
+              :float :right}])
