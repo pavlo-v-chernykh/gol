@@ -73,6 +73,7 @@
     [:div
      [:button {:on-click (fn [] (put! c {:msg :toggle}))} "Toggle"]
      [:button {:on-click (fn [] (put! c {:msg :reset}))} "Reset"]
+     [:button {:on-click (fn [] (put! c {:msg :clean}))} "Clean"]
      [:input {:on-change (fn [this] (put! c {:msg :timeout :timeout (aget this "target" "value")}))
               :type      :range
               :min       (:timeout-min @state)
@@ -84,6 +85,7 @@
         (case v
           :toggle (swap! state update-in [:pause] not)
           :reset (swap! state update-in [:gen] (fn [_] (let [s @state] (rand-gen (:count s) (:width s) (:height s)))))
+          :clean (swap! state update-in [:gen] (fn [_] #{}))
           :timeout (swap! state update-in [:timeout] (fn [_] (:timeout msg)))))))
 
 
