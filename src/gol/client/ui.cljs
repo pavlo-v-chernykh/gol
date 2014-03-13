@@ -4,12 +4,6 @@
             [cljs.core.async :as async :refer [chan timeout <! put!]]
             [gol.client.bl :refer [filter-on-viewport step]]))
 
-(defn cell
-  [c x y cell]
-  [:b.cell
-   {:on-click (fn [] (put! c {:msg :toggle :loc [x y]}))}
-   (when cell [:i])])
-
 (defn main-component
   [state channels]
   (go (while true
@@ -22,15 +16,21 @@
             (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (comp set (partial filter-on-viewport w h) step) step))]
               (when (empty? (get-in ns [:universe :population]))
                 (put! (:actions channels) {:msg :status :status :stasis})))))))
-  (fn [state channels] (into [:ul.cell-area] (let [s @state
-                                            w (get-in s [:viewport :width])
-                                            h (get-in s [:viewport :height])
-                                            p (get-in s [:universe :population])]
-                                        (for [x (range w)]
-                                          (into
-                                            [:li]
-                                            (for [y (range h)]
-                                              [cell (:actions channels) x y (p [x y])])))))))
+  (fn [state channels]
+    (let [s @state
+          w (get-in s [:viewport :width])
+          h (get-in s [:viewport :height])
+          p (get-in s [:universe :population])
+          c (:actions channels)]
+      (into
+        [:ul.cell-area]
+        (for [x (range w)]
+          (into
+            [:li]
+            (for [y (range h)]
+              [:b.cell
+               {:on-click (fn [] (put! c {:msg :toggle :loc [x y]}))}
+               (when (p [x y]) [:i])])))))))
 
 (defn control-component
   [state channels]
@@ -45,7 +45,7 @@
      [:div
       [:button {:on-click (fn []
                             (case
-                              (get-in @state [:evolution :status])
+                                (get-in @state [:evolution :status])
                               :stasis (put! (:actions channels) {:msg :status :status :progress})
                               :progress (put! (:actions channels) {:msg :status :status :stasis})))}
        (if (= (get-in @state [:evolution :status]) :stasis) "Play" "Pause")]
