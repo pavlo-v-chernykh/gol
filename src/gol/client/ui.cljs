@@ -22,10 +22,10 @@
               w (get-in s [:viewport :width])
               h (get-in s [:viewport :height])
               t (get-in s [:universe :type])]
-          (when (not (:pause s))
+          (when (= (get-in s [:evolution :status]) :progress)
             (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (comp set (partial filter-on-viewport w h) step) step))]
               (when (empty? (get-in ns [:universe :population]))
-                (put! (:actions channels) {:msg :pause})))))))
+                (put! (:actions channels) {:msg :status :status :stasis})))))))
   (fn [state c] (into [:ul.cell-area] (let [s @state
                                             w (get-in s [:viewport :width])
                                             h (get-in s [:viewport :height])
@@ -43,7 +43,12 @@
                :max       (* (get-in @state [:viewport :width]) (get-in @state [:viewport :height]))
                :on-change (fn [this] (put! (:actions channels) {:msg :count :count (aget this "target" "value")}))}]]
      [:div
-      [:button {:on-click (fn [] (put! (:actions channels) {:msg :pause}))} (if (:pause @state) "Play" "Pause")]
+      [:button {:on-click (fn []
+                            (case
+                              (get-in @state [:evolution :status])
+                              :stasis (put! (:actions channels) {:msg :status :status :progress})
+                              :progress (put! (:actions channels) {:msg :status :status :stasis})))}
+       (if (= (get-in @state [:evolution :status]) :stasis) "Play" "Pause")]
       [:button {:on-click (fn [] (put! (:actions channels) {:msg :random}))} "Random"]
       [:button {:on-click (fn [] (put! (:actions channels) {:msg :clean}))} "Clean"]]
      [:div

@@ -74,3 +74,24 @@
          :evolution (create-evolution-state period status)
          :generator (create-generator-state count)
          :viewport  (create-viewport-state width height)}))
+
+(defn start
+  [state channels]
+  (go (while true
+        (let [{v :msg :as msg} (<! (:actions channels))]
+          (case v
+            :status (swap! state update-in [:evolution :status] #(:status msg))
+            :random (swap! state update-in [:universe :population] (fn [_] (let [s @state]
+                                                                             (create-population-state
+                                                                               (get-in s [:generator :count])
+                                                                               (get-in s [:viewport :width])
+                                                                               (get-in s [:viewport :height])))))
+            :clean (swap! state update-in [:universe :population] empty)
+            :toggle (swap! state update-in [:universe :population] (fn [p] (let [{loc :loc} msg] (if (p loc) (disj p loc) (conj p loc)))))
+            :evolution (swap! state update-in [:evolution :period] #(:period msg))
+            :universe (swap! state update-in [:universe :type] #(:type msg))
+            :count (swap! state update-in [:generator :count] #(let [s @state
+                                                                     w (get-in s [:viewport :width])
+                                                                     h (get-in s [:viewport :height])
+                                                                     c (:count msg)
+                                                                     m (* w h)] (if (<= c m) c m))))))))
