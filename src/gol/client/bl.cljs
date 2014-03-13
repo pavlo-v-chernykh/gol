@@ -58,6 +58,10 @@
   {:width  width
    :height height})
 
+(defn create-channels
+  []
+  {:actions (chan)})
+
 (defn create-state
   [& {:keys [width height count period status type]
       :or   {width  30

@@ -7,7 +7,7 @@
 (defn cell
   [c x y cell]
   [:b.cell
-   {:on-click (fn [] (put! c {:msg :toggle :loc [x y]}))}
+   {:on-click (fn [] (put! (:actions c) {:msg :toggle :loc [x y]}))}
    (when cell [:i])])
 
 (defn row
@@ -15,7 +15,7 @@
   (into [:li] (map-indexed (partial cell c x) row)))
 
 (defn main-component
-  [state c]
+  [state channels]
   (go (while true
         (<! (timeout (get-in @state [:evolution :period])))
         (let [s @state
@@ -25,7 +25,7 @@
           (when (not (:pause s))
             (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (comp set (partial filter-on-viewport w h) step) step))]
               (when (empty? (get-in ns [:universe :population]))
-                (put! c {:msg :pause})))))))
+                (put! (:actions channels) {:msg :pause})))))))
   (fn [state c] (into [:ul.cell-area] (let [s @state
                                             w (get-in s [:viewport :width])
                                             h (get-in s [:viewport :height])
@@ -33,21 +33,21 @@
                                         (map-indexed (partial row c) (render (create-viewport w h) (filter-on-viewport w h p)))))))
 
 (defn control-component
-  [state c]
-  (fn [state c]
+  [state channels]
+  (fn [state channels]
     [:div
      [:div
       [:input {:value     (get-in @state [:generator :count])
                :type      :number
                :min       1
                :max       (* (get-in @state [:viewport :width]) (get-in @state [:viewport :height]))
-               :on-change (fn [this] (put! c {:msg :count :count (aget this "target" "value")}))}]]
+               :on-change (fn [this] (put! (:actions channels) {:msg :count :count (aget this "target" "value")}))}]]
      [:div
-      [:button {:on-click (fn [] (put! c {:msg :pause}))} (if (:pause @state) "Play" "Pause")]
-      [:button {:on-click (fn [] (put! c {:msg :random}))} "Random"]
-      [:button {:on-click (fn [] (put! c {:msg :clean}))} "Clean"]]
+      [:button {:on-click (fn [] (put! (:actions channels) {:msg :pause}))} (if (:pause @state) "Play" "Pause")]
+      [:button {:on-click (fn [] (put! (:actions channels) {:msg :random}))} "Random"]
+      [:button {:on-click (fn [] (put! (:actions channels) {:msg :clean}))} "Clean"]]
      [:div
-      [:input {:on-change (fn [this] (put! c {:msg :evolution :period (aget this "target" "value")}))
+      [:input {:on-change (fn [this] (put! (:actions channels) {:msg :evolution :period (aget this "target" "value")}))
                :type      :range
                :min       200
                :max       2000
@@ -58,12 +58,12 @@
        [:input {:type      :radio
                 :checked   (= (get-in @state [:universe :type]) :unlimited)
                 :name      :universe
-                :on-change (fn [] (put! c {:msg :universe :type :unlimited}))} "Unlimited"]]
+                :on-change (fn [] (put! (:actions channels) {:msg :universe :type :unlimited}))} "Unlimited"]]
       [:div
        [:input {:type      :radio
                 :checked   (= (get-in @state [:universe :type]) :limited)
                 :name      :universe
-                :on-change (fn [] (put! c {:msg :universe :type :limited}))} "Limited"]]]
+                :on-change (fn [] (put! (:actions channels) {:msg :universe :type :limited}))} "Limited"]]]
      [:div
       [:div "Visible: " (count (let [p (get-in @state [:universe :population])
                                      w (get-in @state [:viewport :width])

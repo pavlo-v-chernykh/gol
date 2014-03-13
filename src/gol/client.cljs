@@ -2,18 +2,17 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as r :refer [atom]]
             [cljs.core.async :as async :refer [chan timeout <! put!]]
-            [gol.client.bl :refer [create-state create-population-state]]
+            [gol.client.bl :refer [create-state create-population-state create-channels]]
             [gol.client.ui :refer [main-component control-component]]))
 
 (def state (create-state))
+(def channels (create-channels))
 
-(def c (chan))
-
-(r/render-component [main-component state c] (js/document.getElementById "app"))
-(r/render-component [control-component state c] (js/document.getElementById "control"))
+(r/render-component [main-component state channels] (js/document.getElementById "app"))
+(r/render-component [control-component state channels] (js/document.getElementById "control"))
 
 (go (while true
-      (let [{v :msg :as msg} (<! c)]
+      (let [{v :msg :as msg} (<! (:actions channels))]
         (case v
           :pause (swap! state update-in [:pause] not)
           :random (swap! state update-in [:universe :population] (fn [_] (let [s @state]
