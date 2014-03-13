@@ -18,37 +18,55 @@
 
 (def step (stepper neighbours #{3} #{2 3}))
 
-(defn empty-board [w h] (vec (repeat w (vec (repeat h nil)))))
+(defn create-viewport [w h] (vec (repeat w (vec (repeat h nil)))))
 
-(defn filter-on-board
+(defn filter-on-viewport
   [bw bh coll]
   (filter (fn [[x y]] (and (< -1 x bw) (< -1 y bh))) coll))
 
-(defn populate
-  [board living-cells]
+(defn render
+  [viewport living-cells]
   (reduce
-    (fn [board coordinates] (assoc-in board coordinates :on))
-    board
+    (fn [viewport coordinates] (assoc-in viewport coordinates :on))
+    viewport
     living-cells))
 
 (defn rand-2d
   [width height]
   (cons [(rand-int width) (rand-int height)] (lazy-seq (rand-2d width height))))
 
-(defn rand-gen
+(defn create-evolution-state
+  [period status]
+  {:period period
+   :status status})
+
+(defn create-generator-state
+  [count]
+  {:count count})
+
+(defn create-population-state
   [count width height]
   (set (take count (distinct (rand-2d width height)))))
 
+(defn create-universe-state
+  [count width height type]
+  {:population (create-population-state count width height)
+   :type       type})
+
+(defn create-viewport-state
+  [width height]
+  {:width  width
+   :height height})
+
 (defn create-state
-  []
-  (atom (let [count 500 width 30 height 30]
-          {:gen               (rand-gen count width height)
-           :random-cell-count count
-           :timeout           {:current 500
-                               :min     200
-                               :max     2000
-                               :step    100}
-           :board             {:width  width
-                               :height height}
-           :limit             false
-           :pause             false})))
+  [& {:keys [width height count period status type]
+      :or   {width  30
+             height 30
+             count  250
+             period 500
+             status :progress
+             type   :unlimited}}]
+  (atom {:universe  (create-universe-state count width height type)
+         :evolution (create-evolution-state period status)
+         :generator (create-generator-state count)
+         :viewport  (create-viewport-state width height)}))

@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as r :refer [atom]]
             [cljs.core.async :as async :refer [chan timeout <! put!]]
-            [gol.client.bl :refer [filter-on-board populate empty-board step]]))
+            [gol.client.bl :refer [filter-on-viewport render create-viewport step]]))
 
 (defn cell
   [c x y cell]
@@ -17,56 +17,56 @@
 (defn main-component
   [state c]
   (go (while true
-        (<! (timeout (get-in @state [:timeout :current])))
+        (<! (timeout (get-in @state [:evolution :period])))
         (let [s @state
-              w (get-in s [:board :width])
-              h (get-in s [:board :height])
-              l (:limit s)]
+              w (get-in s [:viewport :width])
+              h (get-in s [:viewport :height])
+              t (get-in s [:universe :type])]
           (when (not (:pause s))
-            (let [ns (swap! state update-in [:gen] (if l (comp set (partial filter-on-board w h) step) step))]
-              (when (empty? (:gen ns))
+            (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (comp set (partial filter-on-viewport w h) step) step))]
+              (when (empty? (get-in ns [:universe :population]))
                 (put! c {:msg :pause})))))))
   (fn [state c] (into [:ul.cell-area] (let [s @state
-                                            w (get-in s [:board :width])
-                                            h (get-in s [:board :height])
-                                            gen (:gen s)]
-                                        (map-indexed (partial row c) (populate (empty-board w h) (filter-on-board w h gen)))))))
+                                            w (get-in s [:viewport :width])
+                                            h (get-in s [:viewport :height])
+                                            p (get-in s [:universe :population])]
+                                        (map-indexed (partial row c) (render (create-viewport w h) (filter-on-viewport w h p)))))))
 
 (defn control-component
   [state c]
   (fn [state c]
     [:div
      [:div
-      [:input {:value     (:random-cell-count @state)
+      [:input {:value     (get-in @state [:generator :count])
                :type      :number
                :min       1
-               :max       (* (get-in @state [:board :width]) (get-in @state [:board :height]))
+               :max       (* (get-in @state [:viewport :width]) (get-in @state [:viewport :height]))
                :on-change (fn [this] (put! c {:msg :count :count (aget this "target" "value")}))}]]
      [:div
       [:button {:on-click (fn [] (put! c {:msg :pause}))} (if (:pause @state) "Play" "Pause")]
       [:button {:on-click (fn [] (put! c {:msg :random}))} "Random"]
       [:button {:on-click (fn [] (put! c {:msg :clean}))} "Clean"]]
      [:div
-      [:input {:on-change (fn [this] (put! c {:msg :timeout :timeout (aget this "target" "value")}))
+      [:input {:on-change (fn [this] (put! c {:msg :evolution :period (aget this "target" "value")}))
                :type      :range
-               :min       (get-in @state [:timeout :min])
-               :max       (get-in @state [:timeout :max])
-               :step      (get-in @state [:timeout :step])
-               :value     (get-in @state [:timeout :current])}]]
+               :min       200
+               :max       2000
+               :step      100
+               :value     (get-in @state [:evolution :period])}]]
      [:div
       [:div
        [:input {:type      :radio
-                :checked   (not (:limit @state))
-                :name      :limit
-                :on-change (fn [] (put! c {:msg :limit :limit false}))} "Unlimited"]]
+                :checked   (= (get-in @state [:universe :type]) :unlimited)
+                :name      :universe
+                :on-change (fn [] (put! c {:msg :universe :type :unlimited}))} "Unlimited"]]
       [:div
        [:input {:type      :radio
-                :checked   (:limit @state)
-                :name      :limit
-                :on-change (fn [] (put! c {:msg :limit :limit true}))} "Limited"]]]
+                :checked   (= (get-in @state [:universe :type]) :limited)
+                :name      :universe
+                :on-change (fn [] (put! c {:msg :universe :type :limited}))} "Limited"]]]
      [:div
-      [:div "Visible: " (count (let [gen (:gen @state)
-                                     w (get-in @state [:board :width])
-                                     h (get-in @state [:board :height])]
-                                 (filter-on-board w h gen)))]
-      [:div "All: " (count (:gen @state))]]]))
+      [:div "Visible: " (count (let [p (get-in @state [:universe :population])
+                                     w (get-in @state [:viewport :width])
+                                     h (get-in @state [:viewport :height])]
+                                 (filter-on-viewport w h p)))]
+      [:div "All: " (count (get-in @state [:universe :population]))]]]))
