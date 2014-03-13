@@ -34,60 +34,43 @@
   [count width height]
   (set (take count (distinct (repeatedly (fn [] [(rand-int width) (rand-int height)]))))))
 
-(def state (atom (let [count 500 width 30 height 30]
-                   {:gen          (rand-gen count width height)
-                    :count        count
-                    :timeout      500
-                    :timeout-min  200
-                    :timeout-max  2000
-                    :timeout-step 100
-                    :width        width
-                    :height       height
-                    :limit        false
-                    :pause        false})))
-
-(def c (chan))
-
 (defn cell
-  [x y cell]
+  [c x y cell]
   [:b.cell
    {:on-click (fn [] (put! c {:msg :toggle :loc [x y]}))}
    (when cell [:i])])
 
 (defn row
-  [x row]
-  (into [:li] (map-indexed (partial cell x) row)))
+  [c x row]
+  (into [:li] (map-indexed (partial cell c x) row)))
 
-(def main-component
-  (with-meta
-    (fn [] (into [:ul.cell-area] (let [s @state
-                                       w (:width s)
-                                       h (:height s)
-                                       gen (:gen s)]
-                                   (map-indexed row (populate (empty-board w h) (filter-on-board w h gen))))))
-    {:display-name        "main_component"
-     :component-did-mount (fn []
-                            (go (while true
-                                  (<! (timeout (:timeout @state)))
-                                  (let [s @state
-                                        w (:width s)
-                                        h (:height s)
-                                        l (:limit s)]
-                                    (when (not (:pause s))
-                                      (let [ns (swap! state update-in [:gen] (if l (comp set (partial filter-on-board w h) step) step))]
-                                        (when (empty? (:gen ns))
-                                          (put! c {:msg :pause}))))))))}))
+(defn main-component
+  [state c]
+  (go (while true
+        (<! (timeout (:timeout @state)))
+        (let [s @state
+              w (:width s)
+              h (:height s)
+              l (:limit s)]
+          (when (not (:pause s))
+            (let [ns (swap! state update-in [:gen] (if l (comp set (partial filter-on-board w h) step) step))]
+              (when (empty? (:gen ns))
+                (put! c {:msg :pause})))))))
+  (fn [state c] (into [:ul.cell-area] (let [s @state
+                              w (:width s)
+                              h (:height s)
+                              gen (:gen s)]
+                          (map-indexed (partial row c) (populate (empty-board w h) (filter-on-board w h gen)))))))
 
-(r/render-component [main-component] (js/document.getElementById "app"))
-
-(def control-component
-  (fn []
+(defn control-component
+  [state c]
+  (fn [state c]
     [:div
      [:div
-      [:input {:value (:count @state)
-               :type :number
-               :min 1
-               :max (* (:width @state) (:height @state))
+      [:input {:value     (:count @state)
+               :type      :number
+               :min       1
+               :max       (* (:width @state) (:height @state))
                :on-change (fn [this] (put! c {:msg :count :count (aget this "target" "value")}))}]]
      [:div
       [:button {:on-click (fn [] (put! c {:msg :pause}))} (if (:pause @state) "Play" "Pause")]
@@ -118,7 +101,22 @@
                                  (filter-on-board w h gen)))]
       [:div "Universe: " (count (:gen @state))]]]))
 
-(r/render-component [control-component] (js/document.getElementById "control"))
+(def state (atom (let [count 500 width 30 height 30]
+                   {:gen          (rand-gen count width height)
+                    :count        count
+                    :timeout      500
+                    :timeout-min  200
+                    :timeout-max  2000
+                    :timeout-step 100
+                    :width        width
+                    :height       height
+                    :limit        false
+                    :pause        false})))
+
+(def c (chan))
+
+(r/render-component [main-component state c] (js/document.getElementById "app"))
+(r/render-component [control-component state c] (js/document.getElementById "control"))
 
 (go (while true
       (let [{v :msg :as msg} (<! c)]
