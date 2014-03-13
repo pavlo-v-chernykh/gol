@@ -2,17 +2,13 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as r :refer [atom]]
             [cljs.core.async :as async :refer [chan timeout <! put!]]
-            [gol.client.bl :refer [filter-on-viewport render create-viewport step]]))
+            [gol.client.bl :refer [filter-on-viewport step]]))
 
 (defn cell
   [c x y cell]
   [:b.cell
-   {:on-click (fn [] (put! (:actions c) {:msg :toggle :loc [x y]}))}
+   {:on-click (fn [] (put! c {:msg :toggle :loc [x y]}))}
    (when cell [:i])])
-
-(defn row
-  [c x row]
-  (into [:li] (map-indexed (partial cell c x) row)))
 
 (defn main-component
   [state channels]
@@ -26,11 +22,15 @@
             (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (comp set (partial filter-on-viewport w h) step) step))]
               (when (empty? (get-in ns [:universe :population]))
                 (put! (:actions channels) {:msg :status :status :stasis})))))))
-  (fn [state c] (into [:ul.cell-area] (let [s @state
+  (fn [state channels] (into [:ul.cell-area] (let [s @state
                                             w (get-in s [:viewport :width])
                                             h (get-in s [:viewport :height])
                                             p (get-in s [:universe :population])]
-                                        (map-indexed (partial row c) (render (create-viewport w h) (filter-on-viewport w h p)))))))
+                                        (for [x (range w)]
+                                          (into
+                                            [:li]
+                                            (for [y (range h)]
+                                              [cell (:actions channels) x y (p [x y])])))))))
 
 (defn control-component
   [state channels]
