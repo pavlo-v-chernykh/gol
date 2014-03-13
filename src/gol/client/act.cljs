@@ -1,7 +1,7 @@
 (ns gol.client.act
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [timeout <! put!]]
-            [gol.client.bl :refer [rand-population filter-on-viewport step]]))
+            [gol.client.bl :refer [rand-population step filtered-on-viewport-stepper]]))
 
 (defn- change-status
   [state {:keys [status]}]
@@ -50,6 +50,6 @@
               h (get-in s [:viewport :height])
               t (get-in s [:universe :type])]
           (when (= (get-in s [:evolution :status]) :progress)
-            (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (comp set (partial filter-on-viewport w h) step) step))]
+            (let [ns (swap! state update-in [:universe :population] (if (= t :limited) (filtered-on-viewport-stepper w h) step))]
               (when (empty? (get-in ns [:universe :population]))
                 (put! (:actions channels) {:msg :status :status :stasis}))))))))

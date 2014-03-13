@@ -19,6 +19,10 @@
   [bw bh coll]
   (filter (fn [[x y]] (and (< -1 x bw) (< -1 y bh))) coll))
 
+(defn filtered-on-viewport-stepper
+  [w h]
+  (comp set (partial filter-on-viewport w h) step))
+
 (defn rand-2d
   [width height]
   (cons [(rand-int width) (rand-int height)] (lazy-seq (rand-2d width height))))
