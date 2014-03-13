@@ -18,18 +18,9 @@
 
 (def step (stepper neighbours #{3} #{2 3}))
 
-(defn create-viewport [w h] (vec (repeat w (vec (repeat h nil)))))
-
 (defn filter-on-viewport
   [bw bh coll]
   (filter (fn [[x y]] (and (< -1 x bw) (< -1 y bh))) coll))
-
-(defn render
-  [viewport living-cells]
-  (reduce
-    (fn [viewport coordinates] (assoc-in viewport coordinates :on))
-    viewport
-    living-cells))
 
 (defn rand-2d
   [width height]
