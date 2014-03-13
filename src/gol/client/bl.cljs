@@ -35,28 +35,9 @@
   [width height]
   (cons [(rand-int width) (rand-int height)] (lazy-seq (rand-2d width height))))
 
-(defn create-evolution-state
-  [period status]
-  {:period period
-   :status status})
-
-(defn create-generator-state
-  [count]
-  {:count count})
-
-(defn create-population-state
+(defn rand-population
   [count width height]
   (set (take count (distinct (rand-2d width height)))))
-
-(defn create-universe-state
-  [count width height type]
-  {:population (create-population-state count width height)
-   :type       type})
-
-(defn create-viewport-state
-  [width height]
-  {:width  width
-   :height height})
 
 (defn create-channels
   []
@@ -70,10 +51,13 @@
              period 500
              status :progress
              type   :unlimited}}]
-  (atom {:universe  (create-universe-state count width height type)
-         :evolution (create-evolution-state period status)
-         :generator (create-generator-state count)
-         :viewport  (create-viewport-state width height)}))
+  (atom {:universe  {:population (rand-population count width height)
+                     :type       type}
+         :evolution {:period period
+                     :status status}
+         :generator {:count count}
+         :viewport  {:width  width
+                     :height height}}))
 
 (defn start
   [state channels]
@@ -82,7 +66,7 @@
           (case v
             :status (swap! state update-in [:evolution :status] #(:status msg))
             :random (swap! state update-in [:universe :population] (fn [_] (let [s @state]
-                                                                             (create-population-state
+                                                                             (rand-population
                                                                                (get-in s [:generator :count])
                                                                                (get-in s [:viewport :width])
                                                                                (get-in s [:viewport :height])))))
