@@ -1,9 +1,10 @@
-(ns gol.client
+(ns gol.client.main
   (:require [reagent.core :as r]
             [gol.client.act :refer [process-changes process-actions process-periods]]
             [gol.client.chan :refer [create-channels]]
             [gol.client.state :refer [create-state]]
-            [gol.client.ui :refer [app-component control-component]]))
+            [gol.client.ui.app :refer [app-component]]
+            [gol.client.ui.control :refer [control-component]]))
 
 (def state (create-state {:width  30
                           :height 30

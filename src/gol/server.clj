@@ -25,7 +25,7 @@
        "/js/build/gol.js")
      [:script
       {:type "text/javascript"}
-      "goog.require('gol.client');"]]))
+      "goog.require('gol.client.main');"]]))
 
 (defroutes main-routes
   (GET "/" [] index-page)
