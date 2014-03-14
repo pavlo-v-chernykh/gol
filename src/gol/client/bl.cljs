@@ -23,10 +23,10 @@
   [w h]
   (comp set (partial filter-on-viewport w h) step))
 
-(defn rand-2d
+(defn rand-2d-seq
   [width height]
-  (cons [(rand-int width) (rand-int height)] (lazy-seq (rand-2d width height))))
+  (cons [(rand-int width) (rand-int height)] (lazy-seq (rand-2d-seq width height))))
 
 (defn rand-population
   [width height]
-  (distinct (rand-2d width height)))
+  (distinct (rand-2d-seq width height)))
