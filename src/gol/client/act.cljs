@@ -12,8 +12,8 @@
   (swap! state assoc-in [:universe :population] (set (take count (rand-population width height)))))
 
 (defn- toggle-cell
-  [state {:keys [loc]}]
-  (swap! state update-in [:universe :population] (fn [p] (if (p loc) (disj p loc) (conj p loc)))))
+  [state {:keys [loc population]}]
+  (swap! state assoc-in [:universe :population] (if (population loc) (disj population loc) (conj population loc))))
 
 (defn- change-period
   [state {:keys [period]}]

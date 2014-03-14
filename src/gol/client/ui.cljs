@@ -16,7 +16,7 @@
           [:li]
           (for [y (range h)]
             [:b.cell
-             {:on-click (fn [] (put! c {:msg :toggle :loc [x y]}))}
+             {:on-click (fn [] (put! c {:msg :toggle :loc [x y] :population p}))}
              (when (p [x y]) [:i])]))))))
 
 (defn control-component
