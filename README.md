@@ -3,7 +3,7 @@ Gol
 
 [Conway's Game of Life](http://en.wikipedia.org/wiki/Conway's_Game_of_Life)
 
-Implemented using:
+Implemented using
 ---
  * [React](http://facebook.github.io/react/)
  * [ClojureScript](https://github.com/clojure/clojurescript)
