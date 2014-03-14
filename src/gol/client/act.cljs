@@ -7,7 +7,7 @@
   [state {:keys [status]}]
   (swap! state assoc-in [:evolution :status] status))
 
-(defn- populate
+(defn- repopulate
   [state {:keys [count width height]}]
   (swap! state assoc-in [:universe :population] (set (take count (rand-population width height)))))
 
@@ -35,13 +35,13 @@
     (swap! state assoc-in [:universe :population] (s population))))
 
 (def ^:private actions-map
-  {:status   change-status
-   :populate populate
-   :toggle   toggle-cell
-   :period   change-period
-   :type     change-type
-   :count    change-count
-   :evolve   evolve})
+  {:status     change-status
+   :repopulate repopulate
+   :toggle     toggle-cell
+   :period     change-period
+   :type       change-type
+   :count      change-count
+   :evolve     evolve})
 
 (defn process-actions
   [state {:keys [actions]}]
@@ -49,7 +49,7 @@
         (let [{action :msg :as msg} (<! actions)]
           ((action actions-map) state msg)))))
 
-(defn process-period
+(defn process-periods
   [state {:keys [actions]}]
   (go (while true
         (<! (timeout (get-in @state [:evolution :period])))

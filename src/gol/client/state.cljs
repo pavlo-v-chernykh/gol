@@ -3,13 +3,7 @@
             [gol.client.bl :refer [rand-population]]))
 
 (defn create-state
-  [& {:keys [width height count period status type]
-      :or   {width  30
-             height 30
-             count  250
-             period 500
-             status :progress
-             type   :unlimited}}]
+  [{:keys [width height count period status type]}]
   (atom {:universe  {:population (set (take count (rand-population width height)))
                      :type       type}
          :evolution {:period period

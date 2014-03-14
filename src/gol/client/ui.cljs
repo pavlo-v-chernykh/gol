@@ -37,13 +37,13 @@
      (if (= (get-in @state [:evolution :status]) :stasis) "Play" "Pause")]
     [:button {:on-click (fn [] (put!
                                  (:actions channels)
-                                 {:msg    :populate
+                                 {:msg    :repopulate
                                   :count  (get-in @state [:generator :count])
                                   :width  (get-in @state [:viewport :width])
                                   :height (get-in @state [:viewport :height])}))} "Random"]
     [:button {:on-click (fn [] (put!
                                  (:actions channels)
-                                 {:msg    :populate
+                                 {:msg    :repopulate
                                   :count  0
                                   :width  0
                                   :height 0}))} "Clean"]]
