@@ -2,10 +2,6 @@
   (:require [cljs.core.async :refer [put!]]
             [gol.client.bl :refer [filter-on-viewport]]))
 
-(defn- change-generator-count-handler
-  [chan]
-  (fn [this] (put! chan {:msg :count :count (aget this "target" "value")})))
-
 (defn- change-evolution-status-handler
   [chan status]
   (fn []
@@ -15,6 +11,10 @@
 (defn- random-population-handler
   [chan count width height]
   (fn [] (put! chan {:msg :repopulate :count count :width width :height height})))
+
+(defn- evolve-population-handler
+  [chan type width height population]
+  (fn [] (put! chan {:msg :evolve :type type :width width :height height :population population})))
 
 (defn- change-evolution-period-handler
   [chan]
@@ -32,11 +32,10 @@
          {:keys [type population]} :universe} @state]
     [:div
      [:div
-      [:input {:type      :number :min 1 :max (* width height) :value gc
-               :on-change (change-generator-count-handler actions)}]]
-     [:div
       [:button {:on-click (change-evolution-status-handler actions status)}
        (if (= status :stasis) "Play" "Pause")]
+      [:button {:on-click (evolve-population-handler actions type width height population)}
+       "Step"]
       [:button {:on-click (random-population-handler actions gc width height)}
        "Random"]
       [:button {:on-click (random-population-handler actions 0 0 0)}

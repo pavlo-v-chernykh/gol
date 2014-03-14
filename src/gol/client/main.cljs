@@ -8,7 +8,7 @@
 
 (def state (create-state {:width  30
                           :height 30
-                          :count  250
+                          :count  450
                           :period 500
                           :status :progress
                           :type   :unlimited}))
