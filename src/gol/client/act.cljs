@@ -29,10 +29,10 @@
 
 (defn- evolve
   [state {:keys [type width height population]}]
-  (let [s (case type
-            :limited (filtered-on-viewport-stepper width height)
-            :unlimited step)]
-    (swap! state assoc-in [:universe :population] (s population))))
+  (let [step (case type
+               :limited (filtered-on-viewport-stepper width height)
+               :unlimited step)]
+    (swap! state assoc-in [:universe :population] (step population))))
 
 (def ^:private actions-map
   {:status     change-status
@@ -46,8 +46,9 @@
 (defn process-actions
   [state {:keys [actions]}]
   (go (while true
-        (let [{action :msg :as msg} (<! actions)]
-          ((action actions-map) state msg)))))
+        (let [{action-key :msg :as msg} (<! actions)
+              {action action-key} actions-map]
+          (action state msg)))))
 
 (defn process-periods
   [state {:keys [actions]}]

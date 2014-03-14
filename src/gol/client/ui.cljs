@@ -4,7 +4,9 @@
 
 (defn main-component
   [state channels]
-  (let [s @state
+  (let [
+
+        s @state
         w (get-in s [:viewport :width])
         h (get-in s [:viewport :height])
         p (get-in s [:universe :population])
