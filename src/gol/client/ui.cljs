@@ -1,25 +1,22 @@
 (ns gol.client.ui
-  (:require [cljs.core.async :as async :refer [put!]]
+  (:require [cljs.core.async :refer [put!]]
             [gol.client.bl :refer [filter-on-viewport]]))
 
-(defn main-component
-  [state channels]
-  (let [
+(defn- toggle-cell-handler [chan x y population]
+  (fn [] (put! chan {:msg :toggle :loc [x y] :population population})))
 
-        s @state
-        w (get-in s [:viewport :width])
-        h (get-in s [:viewport :height])
-        p (get-in s [:universe :population])
-        c (:actions channels)]
-    (into
-      [:ul.cell-area]
-      (for [x (range w)]
-        (into
-          [:li]
-          (for [y (range h)]
-            [:b.cell
-             {:on-click (fn [] (put! c {:msg :toggle :loc [x y] :population p}))}
-             (when (p [x y]) [:i])]))))))
+(defn app-component
+  [state {:keys [actions]}]
+  (let [{{:keys [width height]} :viewport
+         {:keys [population]}   :universe} @state]
+    (into [:ul.cell-area]
+          (for [x (range width)]
+            (into [:li]
+                  (for [y (range height)]
+                    [:b.cell {:on-click (toggle-cell-handler actions x y population)}
+                     (when (population [x y]) [:i])]))))))
+
+
 
 (defn control-component
   [state channels]
@@ -52,8 +49,8 @@
    [:div
     [:input {:on-change (fn [this] (put! (:actions channels) {:msg :period :period (aget this "target" "value")}))
              :type      :range
-             :min       200
-             :max       2000
+             :min       0
+             :max       1000
              :step      100
              :value     (get-in @state [:evolution :period])}]]
    [:div
