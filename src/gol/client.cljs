@@ -1,6 +1,6 @@
 (ns gol.client
   (:require [reagent.core :as r]
-            [gol.client.act :refer [process-actions process-period]]
+            [gol.client.act :refer [process-changes process-actions process-period]]
             [gol.client.chan :refer [create-channels]]
             [gol.client.state :refer [create-state]]
             [gol.client.ui :refer [main-component control-component]]))
@@ -11,5 +11,6 @@
 (r/render-component [main-component state channels] (js/document.getElementById "app"))
 (r/render-component [control-component state channels] (js/document.getElementById "control"))
 
-(process-period state channels)
+(process-changes state channels)
 (process-actions state channels)
+(process-period state channels)
