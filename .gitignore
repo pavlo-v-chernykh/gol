@@ -17,4 +17,4 @@ pom.xml
 *.ipr
 *.iws
 
-resources/**/build
+resources
