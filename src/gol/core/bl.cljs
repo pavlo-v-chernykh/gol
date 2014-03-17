@@ -1,4 +1,4 @@
-(ns gol.client.bl)
+(ns gol.core.bl)
 
 (defn neighbours
   [[x y]]

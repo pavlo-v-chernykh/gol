@@ -1,7 +1,7 @@
-(ns gol.client.act
+(ns gol.core.act
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [timeout <! put!]]
-            [gol.client.bl :refer [rand-population step filtered-on-viewport-stepper]]))
+            [gol.core.bl :refer [rand-population step filtered-on-viewport-stepper]]))
 
 (defn- change-status
   [state {:keys [status]}]
