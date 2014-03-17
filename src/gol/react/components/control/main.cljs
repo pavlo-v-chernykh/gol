@@ -1,6 +1,6 @@
-(ns gol.client.ui.control
+(ns gol.react.components.control.main
   (:require [cljs.core.async :refer [put!]]
-            [gol.client.bl :refer [filter-on-viewport]]))
+            [gol.core.bl :refer [filter-on-viewport]]))
 
 (defn- change-evolution-status-handler
   [chan status]

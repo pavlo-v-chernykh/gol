@@ -1,10 +1,10 @@
-(ns gol.client.ui.app
+(ns gol.react.components.viewport.main
   (:require [cljs.core.async :refer [put!]]))
 
 (defn- toggle-cell-handler [chan x y population]
   (fn [] (put! chan {:msg :toggle :loc [x y] :population population})))
 
-(defn app-component
+(defn viewport-component
   [state {:keys [actions]}]
   (let [{{:keys [width height]} :viewport
          {:keys [population]}   :universe} @state]
