@@ -27,7 +27,6 @@
               :type "text/css"
               :href "css/react/styles.css"}]]
      [:body
-      [:div (seq [[:div] [:div]])]
       [:div#viewport (when-not client? (r/render-component-to-string [viewport-component state channels]))]
       [:div#control (when-not client? (r/render-component-to-string [control-component state channels]))]
       (when dev?
