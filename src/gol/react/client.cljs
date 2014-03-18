@@ -8,12 +8,12 @@
 
 (defn ^:export main
   []
-  (let [state (atom (create-state {:width  30
-                                   :height 30
-                                   :count  450
-                                   :period 500
-                                   :status :progress
-                                   :type   :unlimited}))
+  (let [state (atom @(create-state {:width  30
+                                    :height 30
+                                    :count  450
+                                    :period 500
+                                    :status :progress
+                                    :type   :unlimited}))
         channels (create-channels)]
 
     (r/render-component [viewport-component state channels] (js/document.getElementById "viewport"))
