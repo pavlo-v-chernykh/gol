@@ -7,7 +7,7 @@
 (def cell-size 20)
 
 (defstyles styles
-  [:#app {:display        "table-cell"
+  [:#viewport {:display        "table-cell"
           :vertical-align "middle"
           :text-align     "center"
           :float          :left}]
