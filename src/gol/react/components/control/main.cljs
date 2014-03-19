@@ -41,7 +41,7 @@
       [:button {:on-click (random-population-handler actions 0 0 0)}
        "Clean"]]
      [:div
-      [:input {:type      :range :min 0 :max 1000 :step 100 :value period
+      [:input {:type      :range :min 200 :max 1000 :step 100 :value period
                :on-change (change-evolution-period-handler actions)}]]
      [:div
       [:div
