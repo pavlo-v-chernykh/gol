@@ -3,4 +3,6 @@
 
 (defn create-channels
   []
-  {:actions (chan)})
+  {:actions (chan)
+   :periods (chan)
+   :changes (chan)})

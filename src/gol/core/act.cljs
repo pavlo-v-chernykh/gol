@@ -1,5 +1,5 @@
 (ns gol.core.act
-  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require-macros [cljs.core.async.macros :refer [go alt!]])
   (:require [cljs.core.async :refer [timeout <! put!]]
             [gol.core.bl :refer [rand-population step filtered-on-viewport-stepper]]))
 
@@ -43,31 +43,37 @@
    :count      change-count
    :evolve     evolve})
 
-(defn process-actions
-  [state {:keys [actions]}]
-  (go (while true
-        (let [{action-key :msg :as msg} (<! actions)
-              {action action-key} actions-map]
-          (action state msg)))))
+(defn- run-action
+  [state {action-key :msg :as msg}]
+  (let [{action action-key} actions-map]
+    (action state msg)))
 
-(defn process-periods
-  [state {:keys [actions]}]
+(defn listen-channels
+  [state {:keys [actions periods changes]}]
+  (go (while true
+        (alt!
+          actions ([msg] (run-action state msg))
+          changes ([msg] (run-action state msg))
+          periods ([msg] (run-action state msg))))))
+
+(defn run-periods
+  [state {:keys [periods]}]
   (go (while true
         (<! (timeout (get-in @state [:evolution :period])))
         (let [{{:keys [width height]}    :viewport
                {:keys [type population]} :universe
                {:keys [status]}          :evolution} @state]
           (when (= status :progress)
-            (put! actions {:msg :evolve :population population :width width :height height :type type}))))))
+            (put! periods {:msg :evolve :population population :width width :height height :type type}))))))
 
 (defn- empty-population-watcher
-  [{:keys [actions]}]
+  [{:keys [changes]}]
   (fn [key ref old new]
     (let [{{np :population} :universe
            {s :status}      :evolution} new]
       (if (and (empty? np) (= s :progress))
-        (put! actions {:msg :status :status :stasis})))))
+        (put! changes {:msg :status :status :stasis})))))
 
-(defn process-changes
+(defn watch-changes
   [state channels]
   (add-watch state :empty-population (empty-population-watcher channels)))
