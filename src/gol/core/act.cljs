@@ -8,12 +8,14 @@
   (swap! state assoc-in [:evolution :status] status))
 
 (defn- repopulate
-  [state {:keys [count width height]}]
-  (swap! state assoc-in [:universe :population] (set (take count (rand-population width height)))))
+  [state {:keys [count]}]
+  (let [{{:keys [width height]} :viewport} @state]
+    (swap! state assoc-in [:universe :population] (set (take count (rand-population width height))))))
 
 (defn- toggle-cell
-  [state {:keys [loc population]}]
-  (swap! state assoc-in [:universe :population] (if (population loc) (disj population loc) (conj population loc))))
+  [state {:keys [loc]}]
+  (let [{{population :popuplation} :universe} @state]
+    (swap! state assoc-in [:universe :population] (if (population loc) (disj population loc) (conj population loc)))))
 
 (defn- change-period
   [state {:keys [period]}]
@@ -28,20 +30,22 @@
   (swap! state assoc-in [:generator :count] count))
 
 (defn- evolve
-  [state {:keys [type width height population]}]
-  (let [step (case type
+  [state]
+  (let [{{:keys [type population]} :universe
+         {:keys [width height]} :viewport} @state
+        step (case type
                :limited (filtered-on-viewport-stepper width height)
                :unlimited step)]
     (swap! state assoc-in [:universe :population] (step population))))
 
 (def ^:private actions-map
-  {:status     change-status
+  {:status change-status
    :repopulate repopulate
-   :toggle     toggle-cell
-   :period     change-period
-   :type       change-type
-   :count      change-count
-   :evolve     evolve})
+   :toggle toggle-cell
+   :period change-period
+   :type change-type
+   :count change-count
+   :evolve evolve})
 
 (defn- run-action
   [state {action-key :msg :as msg}]
@@ -59,18 +63,16 @@
 (defn run-periods
   [state {:keys [periods]}]
   (go (while true
-        (<! (timeout (get-in @state [:evolution :period])))
-        (let [{{:keys [width height]}    :viewport
-               {:keys [type population]} :universe
-               {:keys [status]}          :evolution} @state]
+        (let [{{:keys [period status]} :evolution} @state]
+          (<! (timeout period))
           (when (= status :progress)
-            (put! periods {:msg :evolve :population population :width width :height height :type type}))))))
+            (put! periods {:msg :evolve}))))))
 
 (defn- empty-population-watcher
   [{:keys [changes]}]
   (fn [key ref old new]
     (let [{{np :population} :universe
-           {s :status}      :evolution} new]
+           {s :status} :evolution} new]
       (if (and (empty? np) (= s :progress))
         (put! changes {:msg :status :status :stasis})))))
 

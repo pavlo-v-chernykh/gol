@@ -9,12 +9,12 @@
                                               :progress :stasis})})))
 
 (defn- random-population-handler
-  [chan count width height]
-  (fn [] (put! chan {:msg :repopulate :count count :width width :height height})))
+  [chan count]
+  (fn [] (put! chan {:msg :repopulate :count count})))
 
 (defn- evolve-population-handler
-  [chan type width height population]
-  (fn [] (put! chan {:msg :evolve :type type :width width :height height :population population})))
+  [chan]
+  (fn [] (put! chan {:msg :evolve})))
 
 (defn- change-evolution-period-handler
   [chan]
@@ -34,11 +34,11 @@
      [:div
       [:button {:on-click (change-evolution-status-handler actions status)}
        (if (= status :stasis) "Play" "Pause")]
-      [:button {:on-click (evolve-population-handler actions type width height population)}
+      [:button {:on-click (evolve-population-handler actions)}
        "Step"]
-      [:button {:on-click (random-population-handler actions gc width height)}
+      [:button {:on-click (random-population-handler actions gc)}
        "Random"]
-      [:button {:on-click (random-population-handler actions 0 0 0)}
+      [:button {:on-click (random-population-handler actions 0)}
        "Clean"]]
      [:div
       [:input {:type      :range :min 200 :max 1000 :step 100 :value period
