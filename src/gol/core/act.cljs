@@ -14,7 +14,7 @@
 
 (defn- toggle-cell
   [state {:keys [loc]}]
-  (let [{{population :popuplation} :universe} @state]
+  (let [{{population :population} :universe} @state]
     (swap! state assoc-in [:universe :population] (if (population loc) (disj population loc) (conj population loc)))))
 
 (defn- change-period
