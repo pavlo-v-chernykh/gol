@@ -9,3 +9,4 @@ Implemented using
  * [ClojureScript](https://github.com/clojure/clojurescript)
  * [Reagent](https://github.com/holmsand/reagent)
  * [core.async](https://github.com/clojure/core.async)
+ * [garden](https://github.com/noprompt/garden)
