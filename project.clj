@@ -2,10 +2,10 @@
   :description "FIXME: write this!"
   :url "http://example.com/FIXME"
 
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2173"]
                  [org.clojure/google-closure-library-third-party "0.0-20130212-95c19e7f0f5f"]
-                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                 [org.clojure/core.async "0.1.278.0-76b25b-alpha"]
                  [reagent "0.4.1"]
                  [hiccups "0.3.0"]
                  [garden "1.1.5"]]
