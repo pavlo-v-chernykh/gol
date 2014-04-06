@@ -5,16 +5,18 @@ pom.xml
 /classes/
 /out/
 /target/
+/resources/
+/node_modules/
+/bower_components/
 
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
 .repl
 .nrepl-port
+.node-version
 
 .idea
 *.iml
 *.ipr
 *.iws
-
-resources
