@@ -4,7 +4,7 @@
             [garden.units :refer [px percent s]]
             [garden.color :refer [hex->rgb rgba rgb]]))
 
-(def cell-size 20)
+(def cell-size 15)
 
 (defstyles styles
   [:#viewport {:display "table-cell"
