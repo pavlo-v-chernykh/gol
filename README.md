@@ -11,4 +11,4 @@ I've developed yet another one implementation of the game using the next technol
  * [core.async](https://github.com/clojure/core.async)
  * [garden](https://github.com/noprompt/garden)
 
-[Demo](http://pavel-v-chernykh.github.io/gol)
+[Demo](http://pavel-v-chernykh.github.io/gol/react.html)
