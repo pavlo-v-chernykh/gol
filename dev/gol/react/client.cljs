@@ -20,5 +20,5 @@
     (r/render-component [control-component state channels] (js/document.getElementById "control"))
 
     (listen-channels state channels)
-    (watch-changes state channels)
+    (watch-changes state)
     (run-periods state channels)))
