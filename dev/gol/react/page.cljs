@@ -2,8 +2,7 @@
   (:require-macros [hiccups.core :refer [defhtml]])
   (:require [hiccups.runtime]
             [reagent.core :as r]
-            [gol.core.state :refer [create-state]]
-            [gol.core.chan :refer [create-channels]]
+            [gol.core.comp :refer [create-state create-channels]]
             [gol.react.components.viewport.main :refer [viewport-component]]
             [gol.react.components.control.main :refer [control-component]]))
 

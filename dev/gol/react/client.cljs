@@ -1,8 +1,7 @@
 (ns gol.react.client
   (:require [reagent.core :as r :refer [atom]]
-            [gol.core.act :refer [listen-channels watch-changes run-periods]]
-            [gol.core.chan :refer [create-channels]]
-            [gol.core.state :refer [create-state]]
+            [gol.core.act :refer [listen-channels run-periods]]
+            [gol.core.comp :refer [create-state create-channels]]
             [gol.react.components.viewport.main :refer [viewport-component]]
             [gol.react.components.control.main :refer [control-component]]))
 
@@ -20,5 +19,4 @@
     (r/render-component [control-component state channels] (js/document.getElementById "control"))
 
     (listen-channels state channels)
-    (watch-changes state)
     (run-periods state channels)))

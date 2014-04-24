@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go alt!]])
   (:require [cljs.core.async :refer [timeout <! put!]]
             [gol.core.hand :refer [change-status repopulate toggle-cell change-period
-                                   change-type change-count evolve empty-population-watcher]]))
+                                   change-type change-count evolve]]))
 
 (def ^:private msg-handler-map
   {:status change-status
@@ -32,7 +32,3 @@
           (<! (timeout period))
           (when (= status :progress)
             (put! periods {:msg :evolve}))))))
-
-(defn watch-changes
-  [state]
-  (add-watch state :empty-population (empty-population-watcher state)))

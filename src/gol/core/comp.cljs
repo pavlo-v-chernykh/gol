@@ -1,5 +1,6 @@
-(ns gol.core.state
-  (:require [gol.core.bl :refer [rand-population]]))
+(ns gol.core.comp
+  (:require [cljs.core.async :refer [chan]]
+            [gol.core.bl :refer [rand-population]]))
 
 (defn create-state
   [{:keys [width height count period status type]}]
@@ -10,3 +11,8 @@
          :generator {:count count}
          :viewport {:width width
                     :height height}}))
+
+(defn create-channels
+  []
+  {:actions (chan)
+   :periods (chan)})
