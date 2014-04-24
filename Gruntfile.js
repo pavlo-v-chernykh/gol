@@ -29,10 +29,19 @@ module.exports = function (grunt) {
         },
         dest: "resources/public/react.html"
       }
+    },
+    connect: {
+      server: {
+        options: {
+          port: 9000,
+          base: "resources/public"
+        }
+      }
     }
   });
   loadNpmTasks(grunt);
   timeGrunt(grunt);
   grunt.registerMultiTask('render', renderTask(grunt));
-  grunt.registerTask("default", ["render"]);
+  grunt.registerTask("serve", ["connect:server:keepalive"]);
+  grunt.registerTask("default", ["render", "serve"]);
 };
