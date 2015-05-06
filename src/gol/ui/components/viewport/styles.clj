@@ -1,4 +1,4 @@
-(ns gol.react.components.viewport.styles
+(ns gol.ui.components.viewport.styles
   (:require [garden.def :refer [defstyles]]
             [garden.def :refer [defrule defkeyframes]]
             [garden.units :refer [px percent s]]

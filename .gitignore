@@ -1,6 +1,8 @@
 pom.xml
 *jar
 
+*.log
+
 /lib/
 /classes/
 /out/
@@ -20,3 +22,5 @@ pom.xml
 *.iml
 *.ipr
 *.iws
+
+*.sublime-*

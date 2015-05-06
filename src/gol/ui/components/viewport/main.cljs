@@ -1,4 +1,4 @@
-(ns gol.react.components.viewport.main
+(ns gol.ui.components.viewport.main
   (:require [cljs.core.async :refer [put!]]))
 
 (defn- toggle-cell-handler [chan x y]

@@ -1,4 +1,4 @@
-(ns gol.react.components.control.main
+(ns gol.ui.components.control.main
   (:require [cljs.core.async :refer [put!]]
             [gol.core.bl :refer [filter-on-viewport]]))
 
