@@ -12,7 +12,7 @@
             :hooks [leiningen.cljsbuild]
             :profiles {:dev {:cljsbuild {:builds [{:id           :gol
                                                    :source-paths ["src"]
-                                                   :figwheel     true
+                                                   :figwheel     {:on-jsload "gol.ui.client/on-js-reload"}
                                                    :compiler     {:output-to     "out/js/gol/gol.js"
                                                                   :output-dir    "out/js/gol"
                                                                   :asset-path    "out/js/gol"
